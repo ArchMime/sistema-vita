@@ -1,0 +1,25 @@
+{
+  "name": "Sistema Vita - Gestión Interna",
+  "short_name": "Sistema Vita",
+  "description": "Sistema de gestión interna ultra-ligero para local comercial",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/static/assets/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "128x128",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/assets/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ]
+}

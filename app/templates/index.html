@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Vita - Pruebas PWA</title>
+    
+    <!-- 📱 Vinculación del Manifiesto de la PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+
+    <!-- Configuración para compatibilidad con PWAs en móviles -->
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Puedes mantener las siguientes líneas para asegurar retrocompatibilidad con iPhones antiguos -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sistema Vita">
+    <link rel="apple-touch-icon" href="/static/assets/icons/icon-192.png">
+
+</head>
+<body>
+    <h1>🌱 Sistema Vita funcionando con soporte PWA</h1>
+    <p>Las bases de datos se han verificado, el cifrado SSL está activo y el manifiesto está listo.</p>
+
+    <!-- Script para registrar el Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then((registration) => {
+                        console.log('🤖 Service Worker registrado con éxito en el ámbito:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error al registrar el Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+
+</body>
+</html>
+
