@@ -6,7 +6,7 @@
     <title>Sistema Vita - Panel de Control Local</title>
     
     <!-- 🎨 Vinculación del Archivo CSS Externo -->
-    <link rel="stylesheet" href="/static/estilos_panel.css">
+    <link rel="stylesheet" href="/static/css/estilos_panel.css">
 
     <!-- 📱 Vinculación del Manifiesto de la PWA -->
     <link rel="manifest" href="/static/manifest.json">
@@ -24,34 +24,59 @@
         <h1>🌱 Sistema Vita</h1>
         <p class="subtitle">Panel de Acceso y Configuración Local</p>
 
-        <!-- BLOQUE PASO 1: SEGURIDAD -->
-        <div class="qr-section">
-            <img class="qr-image" src="{{ qr_certificado }}" alt="QR Certificado">
-            <p>Paso 1: Escanea para descargar e instalar el certificado de seguridad.</p>
+        <!-- 🎛️ Sistema de Pestañas Interactivas -->
+        <div class="pestanas-qr">
+            <button class="tab-qr-btn active" onclick="cambiarQR('tab-certificado')">
+                🔒 1. Registro del Sistema
+            </button>
+            <button class="tab-qr-btn" onclick="cambiarQR('tab-pwa')">
+                🚀 2. Ingreso a Plataforma
+            </button>
         </div>
 
-        <!-- BLOQUE PASO 2: INGRESO AL SISTEMA -->
-        <div class="qr-section" style="border-color: #2563eb;">
-            <img class="qr-image" src="{{ qr_navegacion }}" alt="QR Aplicación">
-            <p>Paso 2: Una vez instalado el certificado, escanea aquí para abrir la PWA.</p>
+        <!-- 🛑 Contenido Pestaña 1: Certificado (Activa por defecto) -->
+        <div id="tab-certificado" class="contenido-qr active">
+            <div class="qr-section">
+                <img class="qr-image" src="{{ qr_certificado }}" alt="QR Certificado">
+                <p><b>Paso 1:</b> Escanea para abrir el tutorial interactivo, descargar e instalar el certificado de seguridad en tu dispositivo.</p>
+            </div>
         </div>
 
+        <!-- 🟢 Contenido Pestaña 2: PWA (Oculta al inicio) -->
+        <div id="tab-pwa" class="contenido-qr">
+            <div class="qr-section pwa-border">
+                <img class="qr-image" src="{{ qr_navegacion }}" alt="QR Aplicación">
+                <p><b>Paso 2:</b> Una vez que el certificado esté instalado con éxito, escanea aquí para abrir e instalar la aplicación comercial (PWA).</p>
+            </div>
+        </div>
+
+        <!-- 📖 Resumen Instrucciones -->
         <div class="instructions">
             <strong>Flujo rápido de conexión en móviles:</strong>
             <ol>
-                <li>Escanea el QR del <strong>Paso 1</strong> y descarga el archivo.</li>
-                <li>Instálalo en tu celular desde <em>Ajustes > Seguridad > Instalar certificado > Certificado de CA</em>.</li>
-                <li>Escanea el QR del <strong>Paso 2</strong> para abrir el sistema.</li>
-                <li>¡Dale a "Añadir a la pantalla de inicio" en tu navegador para instalar la PWA!</li>
+                <li>Quédate en la pestaña <b>Registro del Sistema</b>, escanea el QR e instala el certificado siguiendo la guía visual.</li>
+                <li>Cambia a la pestaña <b>Ingreso a Plataforma</b> y escanea el segundo QR para iniciar sesión.</li>
+                <li>¡Selecciona "Añadir a la pantalla de inicio" en tu navegador para instalar la PWA de forma definitiva!</li>
             </ol>
         </div>
     </div>
 
-    <!-- Script para registrar el Service Worker -->
+    <!-- ⚡ Lógica de Control de Pestañas y Service Worker -->
     <script>
+        function cambiarQR(tabId) {
+            // Ocultar todos los bloques de QR
+            document.querySelectorAll('.contenido-qr').forEach(el => el.classList.remove('active'));
+            // Quitar el estado activo de todos los botones
+            document.querySelectorAll('.tab-qr-btn').forEach(el => el.classList.remove('active'));
+            
+            // Activar el bloque y el botón seleccionado
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Registro del Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // Registramos apuntando correctamente al archivo dentro de static
                 navigator.serviceWorker.register('/static/sw.js', { scope: '/static/' })
                     .then((registration) => {
                         console.log('🤖 Service Worker registrado con éxito en el ámbito:', registration.scope);

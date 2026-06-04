@@ -1,4 +1,6 @@
-/* app/static/estilos_panel.css */
+/* ==========================================================================
+   🌱 SISTEMA VITA - ESTILOS GENERALES DEL PANEL (UNIFICADO)
+   ========================================================================== */
 :root {
     --bg-color: #f3f4f6;
     --card-color: #ffffff;
@@ -75,24 +77,6 @@ h1 {
     background: white;
 }
 
-.btn-download {
-    display: inline-block;
-    background-color: var(--primary);
-    color: white;
-    text-decoration: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.btn-download:hover {
-    background-color: var(--primary-hover);
-}
-
 .instructions {
     text-align: left;
     background-color: #fef3c7;
@@ -111,4 +95,56 @@ h1 {
 
 .instructions li {
     margin-bottom: 5px;
+}
+
+/* ==========================================================================
+   🎛️ CONTROL DE PESTAÑAS INTERACTIVAS
+   ========================================================================== */
+
+.pestanas-qr {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: #e2e8f0;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.tab-qr-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-qr-btn.active {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Forzar que los bloques no activos permanezcan ocultos */
+.contenido-qr {
+    display: none !important;
+}
+
+/* Forzar que el bloque activo se muestre */
+.contenido-qr.active {
+    display: block !important;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.pwa-border {
+    border-color: var(--primary) !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }

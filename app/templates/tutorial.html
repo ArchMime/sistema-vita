@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración de Seguridad - Sistema Vita</title>
+    <link rel="stylesheet" href="/static/css/tutorial.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h1>🔒 Configuración Inicial del Sistema</h1>
+        <p class="subtitulo">Sigue estos pasos para autorizar el acceso seguro desde tu dispositivo.</p>
+        
+        <!-- PASO 1 -->
+        <div class="paso">
+            <h2>Paso 1: Descargar el Certificado</h2>
+            <p>Presiona el botón de abajo para guardar el archivo de seguridad en tu dispositivo.</p>
+            <a href="/descargar-certificado" class="btn btn-descarga">⬇️ Descargar Certificado</a>
+        </div>
+
+        <!-- PASO 2 -->
+        <div class="paso">
+            <h2>Paso 2: Instalar en el Dispositivo</h2>
+            <div class="pestanas">
+                <button class="tab-btn active" onclick="cambiarSistemas('android')">Android</button>
+                <button class="tab-btn" onclick="cambiarSistemas('ios')">iPhone / iPad</button>
+            </div>
+            
+            <!-- Guía Android -->
+            <div id="android" class="guia-sistema active">
+                <ol>
+                    <li>Abre los <b>Ajustes</b> de tu teléfono.</li>
+                    <li>Busca <b>Seguridad y Privacidad</b> > <b>Otros ajustes de seguridad</b>.</li>
+                    <li>Selecciona <b>Instalar desde el almacenamiento</b> > <b>Certificado de CA</b>.</li>
+                    <li>Busca el archivo <code class="badge">sistema_vita_root.crt</code> y acepta la instalación.</li>
+                </ol>
+            </div>
+
+            <!-- Guía iOS -->
+            <div id="ios" class="guia-sistema">
+                <ol>
+                    <li>Abre el archivo descargado para guardarlo en tu Perfil.</li>
+                    <li>Abre <b>Ajustes</b> > <b>Perfil descargado</b> e instálalo.</li>
+                    <li>Ve a <b>Ajustes</b> > <b>General</b> > <b>Información</b> > <b>Ajustes de confianza de los certificados</b>.</li>
+                    <li>Activa el interruptor completo para el certificado de <b>Sistema Vita</b>.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- PASO 3 -->
+        <div class="paso final">
+            <h2>Paso 3: ¡Listo para trabajar!</h2>
+            <p>Una vez instalado el certificado, haz clic abajo para ingresar al sistema comercial.</p>
+            <a href="{{ url_pwa }}" class="btn btn-ingresar">🚀 Entrar al Sistema Vita (PWA)</a>
+        </div>
+    </div>
+
+    <script>
+        function cambiarSistemas(sistema) {
+            document.querySelectorAll('.guia-sistema').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(sistema).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>
