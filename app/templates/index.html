@@ -3,34 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Vita - Pruebas PWA</title>
+    <title>Sistema Vita - Panel de Control Local</title>
     
+    <!-- 🎨 Vinculación del Archivo CSS Externo -->
+    <link rel="stylesheet" href="/static/estilos_panel.css">
+
     <!-- 📱 Vinculación del Manifiesto de la PWA -->
     <link rel="manifest" href="/static/manifest.json">
-
+    
     <!-- Configuración para compatibilidad con PWAs en móviles -->
     <meta name="mobile-web-app-capable" content="yes">
-    
-    <!-- Puedes mantener las siguientes líneas para asegurar retrocompatibilidad con iPhones antiguos -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Sistema Vita">
     <link rel="apple-touch-icon" href="/static/assets/icons/icon-192.png">
-
 </head>
 <body>
-    <h1>🌱 Sistema Vita funcionando con soporte PWA</h1>
-    <p>Las bases de datos se han verificado, el cifrado SSL está activo y el manifiesto está listo.</p>
+
+    <div class="container">
+        <span class="badge">📡 Servidor Activo: {{ ip_servidor }}</span>
+        <h1>🌱 Sistema Vita</h1>
+        <p class="subtitle">Panel de Acceso y Configuración Local</p>
+
+        <!-- BLOQUE PASO 1: SEGURIDAD -->
+        <div class="qr-section">
+            <img class="qr-image" src="{{ qr_certificado }}" alt="QR Certificado">
+            <p>Paso 1: Escanea para descargar e instalar el certificado de seguridad.</p>
+        </div>
+
+        <!-- BLOQUE PASO 2: INGRESO AL SISTEMA -->
+        <div class="qr-section" style="border-color: #2563eb;">
+            <img class="qr-image" src="{{ qr_navegacion }}" alt="QR Aplicación">
+            <p>Paso 2: Una vez instalado el certificado, escanea aquí para abrir la PWA.</p>
+        </div>
+
+        <div class="instructions">
+            <strong>Flujo rápido de conexión en móviles:</strong>
+            <ol>
+                <li>Escanea el QR del <strong>Paso 1</strong> y descarga el archivo.</li>
+                <li>Instálalo en tu celular desde <em>Ajustes > Seguridad > Instalar certificado > Certificado de CA</em>.</li>
+                <li>Escanea el QR del <strong>Paso 2</strong> para abrir el sistema.</li>
+                <li>¡Dale a "Añadir a la pantalla de inicio" en tu navegador para instalar la PWA!</li>
+            </ol>
+        </div>
+    </div>
 
     <!-- Script para registrar el Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js')
+                // Registramos apuntando correctamente al archivo dentro de static
+                navigator.serviceWorker.register('/static/sw.js', { scope: '/static/' })
                     .then((registration) => {
                         console.log('🤖 Service Worker registrado con éxito en el ámbito:', registration.scope);
                     })
                     .catch((error) => {
-                        console.error('❌ Error al registrar el Service Worker:', error);
+                        console.error('❌ Error en Service Worker:', error);
                     });
             });
         }
@@ -38,4 +65,3 @@
 
 </body>
 </html>
-

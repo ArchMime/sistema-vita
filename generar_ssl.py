@@ -2,11 +2,24 @@
 import datetime
 import os
 import ipaddress
+import socket
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
+
+def obtener_ip_local() -> str:
+    """Detecta de forma automática la IP privada activa para inyectarla en el certificado."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip_local = s.getsockname()[0]
+    except Exception:
+        ip_local = "127.0.0.1"
+    finally:
+        s.close()
+    return ip_local
 
 def crear_certificado_autofirmado():
     # 1. Generar la clave privada
@@ -15,23 +28,27 @@ def crear_certificado_autofirmado():
         key_size=2048
     )
 
-    # 2. Configurar los detalles del emisor/sujeto (Genérico)
+    # 2. Configurar los detalles del emisor/sujeto
     sujeto = emisor = x509.Name([
         x509.NameAttribute(NameOID.COUNTRY_NAME, "CL"),
         x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "Santiago"),
         x509.NameAttribute(NameOID.LOCALITY_NAME, "Local"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Sistema Vita"),
-        x509.NameAttribute(NameOID.COMMON_NAME, "localhost"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Sistema Vita CA"),
+        x509.NameAttribute(NameOID.COMMON_NAME, "Sistema Vita Root CA"),
     ])
 
-    # 3. Configurar nombres alternativos (Crucial para que los teléfonos acepten la IP)
+    # 3. Configurar nombres alternativos (Dinámicos y precisos)
     nombres_alternativos = [
         x509.DNSName("localhost"),
     ]
     
-    # Agregamos IPs comunes de redes locales como alternativas aceptadas
-    ips_locales = ["127.0.0.1", "192.168.0.100", "192.168.1.100", "192.168.1.50"]
-    for ip in ips_locales:
+    # Detectamos la IP real actual del servidor (ej. 192.168.100.67)
+    ip_actual = obtener_ip_local()
+    
+    # Lista base que incluye la IP real detectada y el loopback estándar
+    ips_validar = ["127.0.0.1", ip_actual]
+    
+    for ip in ips_validar:
         try:
             nombres_alternativos.append(x509.IPAddress(ipaddress.ip_address(ip)))
         except ValueError:
@@ -47,9 +64,34 @@ def crear_certificado_autofirmado():
     builder = builder.serial_number(x509.random_serial_number())
     builder = builder.not_valid_before(ahora - datetime.timedelta(days=1))
     builder = builder.not_valid_after(ahora + datetime.timedelta(days=3650)) # 10 años
+    
+    # Nombres Alternativos del Sujeto (SAN)
     builder = builder.add_extension(
         x509.SubjectAlternativeName(nombres_alternativos),
         critical=False
+    )
+
+    # 🚨 RESTRICCIÓN CRUCIAL PARA ANDROID 🚨
+    # Le dice explícitamente al sistema operativo que este archivo es una Autoridad de Certificación Raíz legítima.
+    builder = builder.add_extension(
+        x509.BasicConstraints(ca=True, path_length=None), 
+        critical=True
+    )
+
+    # Uso de la Llave: Obligatorio para certificar firmas digitales e infraestructura local
+    builder = builder.add_extension(
+        x509.KeyUsage(
+            digital_signature=True,
+            content_commitment=False,
+            key_encipherment=False,
+            data_encipherment=False,
+            key_agreement=False,
+            key_cert_sign=True,  # Permite validar la autoconexión HTTPS
+            crl_sign=True,       # Requisito estructural adicional
+            encipher_only=False,
+            decipher_only=False,
+        ),
+        critical=True
     )
 
     certificado = builder.sign(clave_privada, hashes.SHA256())
@@ -67,7 +109,11 @@ def crear_certificado_autofirmado():
     with open("certificados/cert.pem", "wb") as f:
         f.write(certificado.public_bytes(serialization.Encoding.PEM))
 
-    print("🔑 Certificados SSL genéricos generados exitosamente en la carpeta './certificados/'")
+    print("\n" + "="*60)
+    print("🔑 ¡Nuevos Certificados CA Raíz generados exitosamente!")
+    print(f"📌 IP Local Inyectada: {ip_actual}")
+    print("="*60 + "\n")
 
 if __name__ == "__main__":
     crear_certificado_autofirmado()
+
