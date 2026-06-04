@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuración de Seguridad - Sistema Vita</title>
-    <link rel="stylesheet" href="/static/css/tutorial.css">
+    <!-- 🎨 Vinculación dinámica del CSS usando Jinja2 para máxima flexibilidad -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/tutorial.css') }}">
 </head>
 <body>
     <div class="contenedor">
@@ -21,9 +22,10 @@
         <!-- PASO 2 -->
         <div class="paso">
             <h2>Paso 2: Instalar en el Dispositivo</h2>
+            <!-- Inyección explícita de 'event' en las llamadas de las pestañas -->
             <div class="pestanas">
-                <button class="tab-btn active" onclick="cambiarSistemas('android')">Android</button>
-                <button class="tab-btn" onclick="cambiarSistemas('ios')">iPhone / iPad</button>
+                <button class="tab-btn active" onclick="cambiarSistemas(event, 'android')">Android</button>
+                <button class="tab-btn" onclick="cambiarSistemas(event, 'ios')">iPhone / iPad</button>
             </div>
             
             <!-- Guía Android -->
@@ -55,12 +57,19 @@
         </div>
     </div>
 
+    <!-- ⚡ Lógica de Control de Pestañas Corregida -->
     <script>
-        function cambiarSistemas(sistema) {
+        function cambiarSistemas(evt, sistema) {
+            // Ocultar todos los bloques informativos de sistemas operativos
             document.querySelectorAll('.guia-sistema').forEach(el => el.classList.remove('active'));
+            // Remover el estado visual activo de todos los botones de la sección
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // Mostrar la sección correspondiente e iluminar el botón pulsado de forma segura
             document.getElementById(sistema).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add('active');
+            }
         }
     </script>
 </body>

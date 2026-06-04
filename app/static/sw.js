@@ -1,22 +1,27 @@
 // app/static/sw.js
-const CACHE_NAME = 'vita-cache-v1';
+const CACHE_NAME = 'vita-cache-v2'; // Incrementado a v2 para forzar la actualización en los clientes
+
+// Recursos críticos unificados para garantizar un inicio offline impecable
 const ASSETS_TO_CACHE = [
   '/',
+  '/tutorial',
   '/static/manifest.json',
+  '/static/css/estilos_panel.css',
+  '/static/css/tutorial.css',
   '/static/assets/icons/icon-192.png',
   '/static/assets/icons/icon-512.png'
 ];
 
-// Evento de instalación: Guarda en caché los archivos base
+// Evento de instalación: Asegura el almacenamiento de los estilos y vistas base
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Evento de activación: Limpia cachés antiguas
+// Evento de activación: Purga de forma segura estructuras obsoletas en memoria
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -31,16 +36,21 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Estrategia Network-First con Fallback a Caché (Ideal para un sistema local que cambia datos)
+// Estrategia Network-First selectiva (Exclusiva para consultas de lectura GET)
 self.addEventListener('fetch', (event) => {
+  // CORRECCIÓN CRÍTICA: No interceptar peticiones de escritura (POST, PUT, DELETE) ni recursos externos
+  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Si la red responde bien, devolvemos la respuesta de inmediato
+        // Opcional: Podrías clonar y actualizar la caché dinámicamente aquí si fuera necesario
         return response;
       })
       .catch(() => {
-        // Si no hay red (o el servidor local cayó momentáneamente), busca en la caché
+        // Respaldo inmediato si el servidor local del negocio no responde
         return caches.match(event.request);
       })
   );

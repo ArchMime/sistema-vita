@@ -1,5 +1,5 @@
 /* ==========================================================================
-   🌱 SISTEMA VITA - ESTILOS GENERALES DEL PANEL (UNIFICADO)
+   🌱 SISTEMA VITA - ESTILOS GENERALES DEL PANEL (OPTIMIZADO)
    ========================================================================== */
 :root {
     --bg-color: #f3f4f6;
@@ -16,7 +16,7 @@ body {
     background-color: var(--bg-color);
     color: var(--text-main);
     margin: 0;
-    padding: 20px;
+    padding: 12px; /* Reducido de 20px para pantallas móviles compactas */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,9 +30,10 @@ body {
     background: var(--card-color);
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 30px;
+    padding: 24px; /* Reducido de 30px para ganar espacio en teléfonos */
     text-align: center;
     border: 1px solid var(--border);
+    box-sizing: border-box;
 }
 
 h1 {
@@ -100,10 +101,9 @@ h1 {
 /* ==========================================================================
    🎛️ CONTROL DE PESTAÑAS INTERACTIVAS
    ========================================================================== */
-
 .pestanas-qr {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 20px;
     background: #e2e8f0;
     padding: 4px;
@@ -112,15 +112,16 @@ h1 {
 
 .tab-qr-btn {
     flex: 1;
-    padding: 10px 14px;
+    padding: 10px 8px; /* Ajustado el padding horizontal para evitar desbordes */
     border: none;
     background: transparent;
     color: #475569;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem; /* Ajustado sutilmente para asegurar legibilidad */
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
+    white-space: nowrap; /* Evita que el texto se rompa en dos líneas feas */
 }
 
 .tab-qr-btn.active {
@@ -129,14 +130,14 @@ h1 {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Forzar que los bloques no activos permanezcan ocultos */
+/* 🎯 CORRECCIÓN CRÍTICA: Quitamos el !important del estado oculto */
 .contenido-qr {
-    display: none !important;
+    display: none;
 }
 
-/* Forzar que el bloque activo se muestre */
+/* Permitimos que la especificidad natural active el bloque */
 .contenido-qr.active {
-    display: block !important;
+    display: block;
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -147,4 +148,11 @@ h1 {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* 📱 Soporte específico para teléfonos con pantallas muy pequeñas */
+@media (max-width: 380px) {
+    .container { padding: 16px; }
+    .pestanas-qr { flex-direction: column; gap: 4px; }
+    .tab-qr-btn { padding: 12px; white-space: normal; }
 }

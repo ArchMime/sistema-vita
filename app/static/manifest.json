@@ -8,11 +8,12 @@
   "theme_color": "#1f2937",
   "orientation": "portrait-primary",
   "scope": "/",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/static/assets/icons/icon-192.png",
       "type": "image/png",
-      "sizes": "128x128",
+      "sizes": "192x192",
       "purpose": "any maskable"
     },
     {

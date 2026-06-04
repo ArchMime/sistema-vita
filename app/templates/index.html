@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Vita - Panel de Control Local</title>
     
-    <!-- 🎨 Vinculación del Archivo CSS Externo -->
-    <link rel="stylesheet" href="/static/css/estilos_panel.css">
+    <!-- 🎨 Vinculación dinámica del Archivo CSS Externo usando Jinja2 -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/estilos_panel.css') }}">
 
-    <!-- 📱 Vinculación del Manifiesto de la PWA -->
-    <link rel="manifest" href="/static/manifest.json">
+    <!-- 📱 Vinculación dinámica del Manifiesto de la PWA -->
+    <link rel="manifest" href="{{ url_for('static', path='manifest.json') }}">
     
-    <!-- Configuración para compatibilidad con PWAs en móviles -->
+    <!-- Configuración para compatibilidad con PWAs en dispositivos móviles -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Sistema Vita">
-    <link rel="apple-touch-icon" href="/static/assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="{{ url_for('static', path='assets/icons/icon-192.png') }}">
 </head>
 <body>
 
@@ -24,12 +24,12 @@
         <h1>🌱 Sistema Vita</h1>
         <p class="subtitle">Panel de Acceso y Configuración Local</p>
 
-        <!-- 🎛️ Sistema de Pestañas Interactivas -->
+        <!-- 🎛️ Sistema de Pestañas Interactivas con paso de evento explícito -->
         <div class="pestanas-qr">
-            <button class="tab-qr-btn active" onclick="cambiarQR('tab-certificado')">
+            <button class="tab-qr-btn active" onclick="cambiarQR(event, 'tab-certificado')">
                 🔒 1. Registro del Sistema
             </button>
-            <button class="tab-qr-btn" onclick="cambiarQR('tab-pwa')">
+            <button class="tab-qr-btn" onclick="cambiarQR(event, 'tab-pwa')">
                 🚀 2. Ingreso a Plataforma
             </button>
         </div>
@@ -61,25 +61,28 @@
         </div>
     </div>
 
-    <!-- ⚡ Lógica de Control de Pestañas y Service Worker -->
+    <!-- ⚡ Lógica de Control de Pestañas y Service Worker Corregida -->
     <script>
-        function cambiarQR(tabId) {
+        function cambiarQR(evt, tabId) {
             // Ocultar todos los bloques de QR
             document.querySelectorAll('.contenido-qr').forEach(el => el.classList.remove('active'));
             // Quitar el estado activo de todos los botones
             document.querySelectorAll('.tab-qr-btn').forEach(el => el.classList.remove('active'));
             
-            // Activar el bloque y el botón seleccionado
+            // Activar el bloque y el botón seleccionado de forma segura usando el argumento explícito
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add('active');
+            }
         }
 
-        // Registro del Service Worker
+        // Registro Correcto del Service Worker para cobertura global del dominio
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js', { scope: '/static/' })
+                // Eliminamos la restricción de ámbito anterior para que cubra todo el sistema operativo local (scope: '/')
+                navigator.serviceWorker.register('/static/sw.js', { scope: '/' })
                     .then((registration) => {
-                        console.log('🤖 Service Worker registrado con éxito en el ámbito:', registration.scope);
+                        console.log('🤖 Service Worker registrado globalmente en el ámbito:', registration.scope);
                     })
                     .catch((error) => {
                         console.error('❌ Error en Service Worker:', error);
